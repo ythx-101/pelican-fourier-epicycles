@@ -1,7 +1,7 @@
 # Benchmark: solve the equations, then let another model redraw them
 
 This repository doubles as a small, repeatable benchmark for frontier models.
-The task tests two different skills: **reverse-engineering** (recover a generator from a video) and **writing a specification someone else can follow** (can a second model rebuild the renderer from the text alone?).
+The task tests two different skills: **reverse-engineering** (recover a generator from a video) and **writing a specification someone else can follow** (can a second model rebuild the renderer from the text and the parameter files, without the solver's code?).
 
 ## 1. The two stages
 
@@ -16,12 +16,12 @@ The gap between the two numbers measures how complete and unambiguous the docume
 
 [`src/score2.py`](src/score2.py) compares a candidate video with the original, frame by frame, at full resolution (1280×720, RGB, no downscaling, no grayscale).
 
-- BG = a static background plate estimated once from the original (per-pixel 15th percentile over frames 4–999, then a 31×31 spatial median).
+- BG = a static background plate estimated once from the original (per-pixel 15th percentile over 83 frames sampled every 12th frame from 4 to 988, then a 31×31 spatial median).
 - Per pixel and channel, with A = original, B = candidate and a dead zone δ = 2 levels for codec noise:
   - error `e = max(|A − B| − δ, 0)`
   - content `m = max(max(|A − BG|, |B − BG|, |A − B|) − δ, 0)`
 - Frame score `J = 1 − Σe / Σm` (a weighted Jaccard index). Background-only pixels count for nothing, so a darker or blurrier image does not score higher.
-- **SCORE2 = mean J over 514 frames** (frames 3, 10, 17, …, 3598: step 7, offset 3).
+- **SCORE2 = mean J over 514 frames** (frames 3, 10, 17, …, 3594: step 7, offset 3).
 - Diagnostics that do not enter the score: per-segment and per-region J, energy ratio, sharpness ratio, and J4 (J after 4×4 pooling).
 
 A perfect model would still not reach 1.0, because the original was encoded with lossy x264. Re-encoding the solver's own frames with the original's x264 settings and scoring them against its crf 18 render gives about **0.92** overall (stages 0.943, tracing 0.921, ride 0.888, 3D 0.904). We treat that as the practical ceiling.
@@ -39,7 +39,7 @@ python3 src/score2.py --src original.mp4 --video your_render.mp4 --tag mine
 | Starting point (solver's previous round) | 0.7842 (self-reported) | .8839 | .6973 | .7572 | .7541 | .788 | .4878 | — |
 | **Claude Fable 5.2, self-render** | **0.8132** (self-reported) | .9027 | .7349 | .7933 | .7825 | .8258 | .5532 | [results/claude_fable_5_2_self_render.json](results/claude_fable_5_2_self_render.json) |
 | Claude Fable 5.2, self-render, crf 18 throughout | 0.8102 (self-reported) | .8920 | .7349 | .7933 | .7825 | .8258 | .5532 | [results/claude_fable_5_2_self_render_crf18.json](results/claude_fable_5_2_self_render_crf18.json) |
-| **DeepSeek V4 Pro, reproduction from EQUATIONS.md** | **0.8089** (measured by us with `score2.py`) | .8919 | .7351 | .7934 | .7787 | .8254 | .5532 | [results/deepseek_v4_pro_reproduction.json](results/deepseek_v4_pro_reproduction.json) |
+| **DeepSeek V4 Pro, reproduction from EQUATIONS.md (+ parameter files)** | **0.8089** (measured by us with `score2.py`) | .8919 | .7351 | .7934 | .7787 | .8254 | .5532 | [results/deepseek_v4_pro_reproduction.json](results/deepseek_v4_pro_reproduction.json) |
 | Practical ceiling (perfect model, original's codec) | ≈ 0.92 | .943 | .921 | .888 | .904 | — | — | — |
 
 Segments are frame ranges: stages 0–1008, tracing 1008–1584, ride 1584–2160, 3D 2160–3360, ending 3360–3600.
@@ -75,7 +75,7 @@ DeepSeek V4 Pro was asked to list every place where the document was unclear and
 
 EQUATIONS.md is published exactly as the reproducer received it (apart from removing internal file names, paths and the measured tables listed in the README), so these ambiguities are left in place on purpose: they are part of the benchmark record. A future version of the document should resolve them.
 
-DeepSeek's render took about 27 minutes of wall time for 3600 frames with two processes (about 0.34–0.50 s per frame on one core).
+DeepSeek's render took about 27 minutes of wall time for 3600 frames with two processes on a 4-core machine (about 0.34–0.50 s per frame on one core).
 
 ## 5. Adding a new model
 

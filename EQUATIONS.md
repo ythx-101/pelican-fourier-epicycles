@@ -4,7 +4,7 @@
 
 This file specifies the generator that Claude Fable 5.2 found by reverse-engineering the original video (fofr's "Pelican Cycling in 3D", made with Gemini 4 Argon) from the video alone.
 Backticked names are keys of the solver's parameter file `params.json`, or arrays of the coefficient file and the glyph atlas. These files are described here (shapes, counts, meaning, how they were measured) but are NOT distributed, out of respect for the original author. Scalar appearance constants are listed in full.
-`src/render.py` in this repository is DeepSeek V4 Pro's independent re-implementation, written from this file alone.
+`src/render.py` in this repository is DeepSeek V4 Pro's independent re-implementation, written from this file and the parameter files (without the solver's code).
 The document is the solver's own, with internal file names removed; "the solver's renderer" means its reference renderer. Section numbers are kept as in the original, so section 10.7 appears before section 10.6.
 The text below is unchanged except for those removals; apparent ambiguities (for example the transpose convention in 6.7 versus 6.8) are left as written, because the reproduction was scored against this exact text.
 
@@ -71,7 +71,7 @@ rows k = −36..36 as [Re, Im]) instead of Σ_p C[k,p]; see section 10.3. The N 
 | `C` | complex128[2049, 33] | column j ↔ p = j − 16 (p = 0 is column 16); P = (33−1)/2 = 16 (earlier fits: 17 columns, P = 8) |
 | `Z` | complex128[2049, 33] | same layout, depth (columns |p| > 8 are zero) |
 
-`Z` satisfies Z[−k,−p] = conj(Z[k,p]) to 2e-14, in an earlier fit. In R3 the depth corrections were added on columns p ≥ 0 only, so that symmetry no longer holds in the file; the code takes `.real` of the synthesis, which is the definition of depth. Non-zero columns of `Z`: p = −2..8.
+`Z` satisfies Z[−k,−p] = conj(Z[k,p]) to 2e-14, in an earlier fit. In the final round the depth corrections were added on columns p ≥ 0 only, so that symmetry no longer holds in the file; the code takes `.real` of the synthesis, which is the definition of depth. Non-zero columns of `Z`: p = −2..8.
 
 Evaluation at a given ψ (`coef`):
 
@@ -146,7 +146,7 @@ n_vis = floor(sp · M)     otherwise
 
 Samples 0..n_vis−1 are drawn, as a closed polyline if `full`, open otherwise. Nothing is drawn when n_vis ≤ 1 (the first frame of each stage).
 
-`tail_to_pen` = 1 (R3): when not `full`, the pen-tip point (section 5, evaluated at the continuous `sp`) is appended to the polyline as its last vertex, with the brightness weight of sample n_vis−1. The drawn arc is then exactly s ∈ [0, s_pen]. Without this key the line stopped at the last grid sample before the pen, 2–4 px short of it during the N = 1024 stage.
+`tail_to_pen` = 1 (final round): when not `full`, the pen-tip point (section 5, evaluated at the continuous `sp`) is appended to the polyline as its last vertex, with the brightness weight of sample n_vis−1. The drawn arc is then exactly s ∈ [0, s_pen]. Without this key the line stopped at the last grid sample before the pen, 2–4 px short of it during the N = 1024 stage.
 
 ---
 
@@ -511,7 +511,7 @@ cy   = (Im pen + pen_view_off[1])·(1−u) + crank_view[1]·u
 zoom = pen_zoom·(1−u) + crank_view[2]·u                            # linear blend 5 → 3.1
 ```
 
-If `hud.pen_view_tab` is present (R3, section 10.7), `pen_view_off` is replaced in these two lines by `pen_view_off + τ(f)`, where τ(f) = (τx, τy) is the
+If `hud.pen_view_tab` is present (final round, section 10.7), `pen_view_off` is replaced in these two lines by `pen_view_off + τ(f)`, where τ(f) = (τx, τy) is the
 table [[frame, τx, τy], …] interpolated linearly in f (`np.interp`, zero outside the table's frame range). Current table: 436 integer frames in 1114..1571,
 |τ| median 0.23 px, 90th percentile about 0.9 px, in main-view pixels.
 
@@ -675,7 +675,7 @@ Encoding: the solver's submitted video used crf 10 on frames 0–1008 and crf 18
 
 ---
 
-## 10. Measurement and fitting methods (round R3, 2026-11-16)
+## 10. Measurement and fitting methods (final round)
 
 The equation set of sections 2–7 is unchanged by the last refinement round. It changed one drawing rule and re-measured data (coefficients and the pen timing table).
 
@@ -696,7 +696,7 @@ read off the original's ridge, the pen slowing near the tip (dt/ds ∝ 1 + 6·ex
 | small V at (419, 372) | 1036.6–1037.6 | one branch missing |
 
 ### 10.3 The stage curves have their own low-order coefficients (`stage_c`)
-Structure finding of R3: the stage curves (N = 3, 10, 36) are NOT the low-order part of the N = 1024 figure.
+Structure finding of the final round: the stage curves (N = 3, 10, 36) are NOT the low-order part of the N = 1024 figure.
 
 - The 73 numbers c_k, |k| ≤ 36, were measured on the stage frames (the ridge measurement of 10.4 on 24 frames of each stage, last 65 % of
   the stage, samples at least 120 behind the pen; one linear least-squares problem for all 73 complex corrections, d_jf = Re(conj(n_j)·Σ_{|k|≤N} Δc_k e^{iks_j}),
@@ -707,7 +707,7 @@ Structure finding of R3: the stage curves (N = 3, 10, 36) are NOT the low-order 
 - Model: `params.json` key `stage_c` = [[Re c_k, Im c_k] for k = −36..36]. In `scene()`, when N < 1024 the coefficients with |k| ≤ 36 are replaced by
   `stage_c` before the truncated synthesis (and before the epicycle chain is built). For N = 1024, `C` alone is used and its low-order row sums are free
   in the fits of 10.4. Why the original's two sets differ by 0.4 px is not known.
-- History: the first official score of R3 lost 0.02–0.03 on the stage frames because the route corrections 10.2 had moved the low-order part; an
+- History: the first official score of the final round lost 0.02–0.03 on the stage frames because the route corrections 10.2 had moved the low-order part; an
   intermediate version pinned the row sums Σ_p C[k,p]; `stage_c` replaces that rule.
 
 ### 10.4 Ridge-snapping fit of all coefficients C[k,p] and Z[k,p]

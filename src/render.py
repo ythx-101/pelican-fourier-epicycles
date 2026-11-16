@@ -20,7 +20,7 @@ from scipy import ndimage, interpolate
 
 NOT_FOUND_MSG = ('params.json / coeffs_r3.npz / atlas.npz not found. The fitted coefficients and '
                  'measured tables are not distributed with this repository out of respect for the '
-                 'original work; see README ("Why no coefficients"). EQUATIONS.md documents their '
+                 'original work; see README ("Why the coefficients are not included"). EQUATIONS.md documents their '
                  'shapes and meaning.')
 
 # ---------------------------------------------------------------- loading

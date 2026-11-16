@@ -122,6 +122,7 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--src', required=True, help='original video (not included; obtain from the original post)'); ap.add_argument('--cache', default='./score2_cache', help='cache/temp dir'); ap.add_argument('--video'); ap.add_argument('--gen'); ap.add_argument('--params'); ap.add_argument('--ceiling', action='store_true')
     ap.add_argument('--frames'); ap.add_argument('--step', type=int, default=7); ap.add_argument('--off', type=int, default=3); ap.add_argument('--range', nargs=2, type=int, default=[0, 3600])
     ap.add_argument('--tag', default='s2'); ap.add_argument('--outdir', default='./eval'); ap.add_argument('--heat', action='store_true'); ap.add_argument('--raw', action='store_true', help='gen mode: skip the x264 round trip'); ap.add_argument('--enc', default='crf18'); ap.add_argument('--keep'); ap.add_argument('--npy', help='use saved raw rendered frames (as stored by --keep)'); a = ap.parse_args(); global SRC, CACHE; SRC = a.src; CACHE = a.cache; os.makedirs(CACHE, exist_ok=True)
+    if not os.path.exists(SRC): raise SystemExit(f'original video not found: {SRC} (not included in this repository; obtain it from the original post and pass it with --src)')
     fs = sorted(int(x) for x in a.frames.split(',')) if a.frames else list(range(a.range[0] + a.off, a.range[1], a.step))
     BG = background(); t0 = time.time(); os.makedirs(a.outdir, exist_ok=True)
     if a.video: ours = reader(a.video, fs)

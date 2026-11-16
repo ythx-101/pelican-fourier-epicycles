@@ -1,6 +1,6 @@
 # results/
 
-SCORE2 output files (see [BENCHMARK.md](../BENCHMARK.md)), 514 frames each (frames 3, 10, …, 3598).
+SCORE2 output files (see [BENCHMARK.md](../BENCHMARK.md)), 514 frames each (frames 3, 10, …, 3594).
 
 | File | Render | SCORE2 |
 |---|---|---|
@@ -10,4 +10,4 @@ SCORE2 output files (see [BENCHMARK.md](../BENCHMARK.md)), 514 frames each (fram
 
 Fields: `SCORE2` (mean frame J), `J4` (J after 4×4 pooling), `energy` (content energy ratio render/original, < 1 = darker), `sharp` (gradient ratio, < 1 = blurrier), `n` (frames), `segs` (mean J per segment), `regions` (J and share of total loss for the inset window, HUD, title and main image), `worst` (eight lowest frames), `per_frame` (frame → [J, J4, energy, sharp]), `tag`.
 
-The files are the scorer's output with the segment and region labels translated to English; the values are unchanged.
+The files are the scorer's output with the segment and region labels translated to English; the run-time field was dropped and `tag` renamed; all score values are unchanged.

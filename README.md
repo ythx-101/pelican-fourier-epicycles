@@ -6,6 +6,10 @@ English | [中文](README.zh-CN.md)
 > Original post: <https://x.com/fofrAI/status/2110045963951956250> · Google's repost: <https://x.com/Google/status/2110440182390432091>
 > The video and all of its visual content belong to its author. This repository is a mathematical homage: our attempt to read the equations back out of a beautiful piece of work.
 
+![Original vs Claude Fable 5.2](media/compare_fable.jpg)
+
+Original (top) vs. Claude Fable 5.2's re-render from the solved equations (bottom), at the tracing, riding and 3D stages.
+
 ▶ [8-second preview of our re-render](media/preview.mp4) (3D turntable segment, our render only).
 
 ## The story
@@ -26,16 +30,12 @@ Metric: SCORE2, a full-resolution weighted-Jaccard comparison with the original 
 |---|---|---|
 | Claude Fable 5.2, starting point (previous round) | 0.7842 | self-reported |
 | **Claude Fable 5.2, final equations, own renderer** | **0.8132** | self-reported (0.8102 with the same encoding as DeepSeek) |
-| **DeepSeek V4 Pro, rebuilt from EQUATIONS.md only** | **0.8089** | measured by us with `score2.py` |
+| **DeepSeek V4 Pro, rebuilt from EQUATIONS.md + parameter files, no solver code** | **0.8089** | measured by us with `score2.py` |
 | Perfect model (practical ceiling) | ≈ 0.92 | |
 
 The reproduction lands 0.0043 below the solver's own render (0.0013 with identical encoding), so the document is complete enough for an independent model to reproduce the result.
 
-This is a close reconstruction, not a claim that these are fofr's exact equations. Two things remain open: the sub-pixel wander of the 5× inset window, which is reproduced with a measured per-frame table, and why the first three stages use their own low-order coefficients (see [EQUATIONS.md §10.6–10.7](EQUATIONS.md)).
-
-Original (top) vs. Claude Fable 5.2 (bottom), at the tracing, riding and 3D stages. The banners are in Chinese: 原片 = original, 方程复刻 = re-rendered from the solved equations, 照方程重画 = redrawn from the document; 官方分 is the SCORE2 value (self-reported for Fable, measured for DeepSeek).
-
-![Original vs Claude Fable 5.2](media/compare_fable.jpg)
+This is a close reconstruction, not a claim that these are fofr's exact equations. The main open questions: the sub-pixel wander of the 5× inset window, which is reproduced with a measured per-frame table, and why the first three stages use their own low-order coefficients (see [EQUATIONS.md §10.6–10.7](EQUATIONS.md)).
 
 Original (top) vs. DeepSeek V4 Pro's reproduction (bottom):
 
@@ -46,12 +46,12 @@ Original (top) vs. DeepSeek V4 Pro's reproduction (bottom):
 The whole film is one closed curve whose Fourier coefficients themselves vary with the crank phase ψ:
 
 ```
-r(s, ψ)  = Σ_{|k| ≤ N} c_k(ψ) e^{iks},        s ∈ [0, 2π)         2,049 circles at N = 1024
+z(s, ψ)  = Σ_{|k| ≤ N} c_k(ψ) e^{iks},        s ∈ [0, 2π)         2,049 circles at N = 1024
 c_k(ψ)   = Σ_{p = −16..16} C[k,p] e^{ipψ}                         "spatio-temporal" coefficients
 dep(s,ψ) = Re Σ_k Z_k(ψ) e^{iks}                                   depth, for the 3D segment
 ```
 
-- **Time:** N steps 3 → 10 → 36 → 1024 while the pen traces the figure (0–26.4 s); ψ eases in and then turns at 2.5° per frame (one pedal stroke per 2.4 s); the camera turns about 392° on a turntable θ(f) and pitches up to about 17° in the 3D segment.
+- **Time:** N steps through 3, 10, 36 and 1024 while the pen traces the figure (0–26.4 s); ψ eases in and then turns at 2.5° per frame (one pedal stroke per 2.4 s); in the 3D segment the figure turns about 392° on a turntable, θ(f), and the view pitches up to about 17°.
 - **Projection:** rotation by θ about a vertical axis, pitch φ, then perspective with a focal length of about 1408.5 px; brightness follows depth.
 - **Epicycles:** circles sorted by radius, centred at the partial sums of the series; in 3D the chain is rebuilt each frame from the FFT of the projected curve.
 
@@ -69,7 +69,7 @@ The fitted coefficients (about 2,049 × 33 complex numbers for the curve, plus d
 |---|---|
 | [EQUATIONS.md](EQUATIONS.md) | Full generator specification as solved by Claude Fable 5.2 (English) |
 | [BENCHMARK.md](BENCHMARK.md) | Benchmark protocol, SCORE2 metric, results, the reproducer's list of ambiguities |
-| [`src/render.py`](src/render.py) | DeepSeek V4 Pro's renderer, written from EQUATIONS.md alone. Needs the (unpublished) parameter files and stops with an explanation without them |
+| [`src/render.py`](src/render.py) | DeepSeek V4 Pro's renderer, written from EQUATIONS.md + parameter files, no solver code. Needs the (unpublished) parameter files and stops with an explanation without them |
 | [`src/score2.py`](src/score2.py) | SCORE2 metric. Needs the original video, which you supply with `--src` |
 | [`results/`](results/) | Score files (overall, per segment, per region, per frame) |
 | [`media/`](media/) | Preview clip, comparison stills, equation overview |
