@@ -87,4 +87,4 @@ For each new model generation we plan to:
 
 Results files follow the format of `results/*.json`: overall `SCORE2`, `J4`, `energy`, `sharp`, `n`, per-segment `segs`, per-region `regions` (J and share of the total loss), the eight `worst` frames, and `per_frame` = frame → [J, J4, energy, sharp].
 
-Because the original video and the fitted coefficients are not redistributed, runs are coordinated by the maintainer. If you want to run the benchmark with your model, open an issue or contact [@YuLin807](https://x.com/YuLin807) on X.
+The fitted data from the current round is in `data/`; the original video is not redistributed, so supply your own copy to `score2.py`. If you want to run the benchmark with your model, open an issue or contact [@YuLin807](https://x.com/YuLin807) on X.

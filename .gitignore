@@ -1,8 +1,6 @@
 score2_cache/
 eval/
 *.npy
-*.npz
-params*.json
 src.mp4
 *.mp4
 !media/preview.mp4

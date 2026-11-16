@@ -59,9 +59,9 @@ dep(s,ψ) = Re Σ_k Z_k(ψ) e^{iks}                                   depth, for
 
 The full specification (rasterisation, glow layers, inset window, HUD compositing, and how every quantity was measured) is in [EQUATIONS.md](EQUATIONS.md).
 
-## Why the coefficients are not included
+## The fitted data
 
-The fitted coefficients (about 2,049 × 33 complex numbers for the curve, plus depth) and the per-frame measured tables are, in effect, fofr's artwork in numeric form. Out of respect for the original author we publish the equations, the methods and the dimensions of every quantity, but not the numbers themselves. If you have a research need for them, please get in touch ([@YuLin807](https://x.com/YuLin807)).
+The fitted parameters, coefficients (about 2,049 × 33 complex numbers for the curve, plus depth) and glyph atlas are in [`data/`](data/), so `src/render.py` runs out of the box. They are our fit, a solution found from the video, not fofr's source. But rendering them still draws fofr's pelican: the design belongs to fofr. Please use them for study and research, credit fofr ([@fofrAI](https://x.com/fofrAI)) when you show a render, and don't present the drawing as your own art.
 
 ## Repository contents
 
@@ -69,14 +69,15 @@ The fitted coefficients (about 2,049 × 33 complex numbers for the curve, plus d
 |---|---|
 | [EQUATIONS.md](EQUATIONS.md) | Full generator specification as solved by Claude Fable 5.2 (English) |
 | [BENCHMARK.md](BENCHMARK.md) | Benchmark protocol, SCORE2 metric, results, the reproducer's list of ambiguities |
-| [`src/render.py`](src/render.py) | DeepSeek V4 Pro's renderer, written from EQUATIONS.md + parameter files, no solver code. Needs the (unpublished) parameter files and stops with an explanation without them |
+| [`src/render.py`](src/render.py) | DeepSeek V4 Pro's renderer, written from EQUATIONS.md + parameter files, no solver code. Runs with the fitted data in `data/` |
+| [`data/`](data/) | Fitted parameters (`params.json`), coefficients (`coeffs_r3.npz`) and glyph atlas (`atlas.npz`) |
 | [`src/score2.py`](src/score2.py) | SCORE2 metric. Needs the original video, which you supply with `--src` |
 | [`results/`](results/) | Score files (overall, per segment, per region, per frame) |
 | [`media/`](media/) | Preview clip, comparison stills, equation overview |
 
 ```
 pip install -r src/requirements.txt          # numpy, scipy; ffmpeg must be on PATH
-python3 src/render.py --params path/to/params.json --frames 1900 1901 --out f1900.png
+python3 src/render.py --params data/params.json --frames 1900 1901 --out f1900.png
 python3 src/score2.py --src original.mp4 --video render.mp4 --tag mine
 ```
 

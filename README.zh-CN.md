@@ -59,9 +59,9 @@ dep(s,ψ) = Re Σ_k Z_k(ψ) e^{iks}                                   depth, for
 
 完整的规格说明（光栅化、辉光层、插入窗口、HUD 合成，以及每个量是如何测量的）见 [EQUATIONS.md](EQUATIONS.md)。
 
-## 为什么不公开系数
+## 拟合数据
 
-拟合得到的系数（曲线部分约 2,049 × 33 个复数，外加深度）以及逐帧实测表，实质上就是 fofr 作品的数值形式。出于对原作者的尊重，我们公开方程、方法以及每个量的个数和维度，但不公开这些数值本身。如果你有研究上的需要，欢迎联系我们（[@YuLin807](https://x.com/YuLin807)）。
+拟合出的参数、系数（曲线部分约 2,049 × 33 个复数，外加深度）和字形图集都放在 [`data/`](data/)，`src/render.py` 下载即可运行。这些是我们从视频里解出来的一个解，不是 fofr 的源码；但渲染出来的仍是 fofr 设计的那只鹈鹕，画的版权归 fofr。请用于学习和研究，展示渲染结果时注明 fofr（[@fofrAI](https://x.com/fofrAI)），不要把这幅画当成自己的作品。
 
 ## 仓库内容
 
@@ -69,14 +69,15 @@ dep(s,ψ) = Re Σ_k Z_k(ψ) e^{iks}                                   depth, for
 |---|---|
 | [EQUATIONS.md](EQUATIONS.md) | 由 Claude Fable 5.2 解出的完整生成器规格（英文） |
 | [BENCHMARK.md](BENCHMARK.md) | 评测协议、SCORE2 指标、结果，以及复现者列出的含糊之处 |
-| [`src/render.py`](src/render.py) | DeepSeek V4 Pro 凭 EQUATIONS.md 和参数文件写出的渲染器（未看求解器代码）。需要（未公开的）参数文件，没有时会停止并给出说明 |
+| [`src/render.py`](src/render.py) | DeepSeek V4 Pro 凭 EQUATIONS.md 和参数文件写出的渲染器（未看求解器代码）。配合 `data/` 里的拟合数据直接运行 |
+| [`data/`](data/) | 拟合参数（`params.json`）、系数（`coeffs_r3.npz`）和字形图集（`atlas.npz`） |
 | [`src/score2.py`](src/score2.py) | SCORE2 指标。需要原片，用 `--src` 提供 |
 | [`results/`](results/) | 评分文件（总体、分段、分区域、逐帧） |
 | [`media/`](media/) | 预览片段、对比截图、方程总览 |
 
 ```
 pip install -r src/requirements.txt          # numpy, scipy; ffmpeg must be on PATH
-python3 src/render.py --params path/to/params.json --frames 1900 1901 --out f1900.png
+python3 src/render.py --params data/params.json --frames 1900 1901 --out f1900.png
 python3 src/score2.py --src original.mp4 --video render.mp4 --tag mine
 ```
 

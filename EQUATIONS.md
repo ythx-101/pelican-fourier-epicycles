@@ -3,7 +3,7 @@
 ## How to read this
 
 This file specifies the generator that Claude Fable 5.2 found by reverse-engineering the original video (fofr's "Pelican Cycling in 3D", made with Gemini 4 Argon) from the video alone.
-Backticked names are keys of the solver's parameter file `params.json`, or arrays of the coefficient file and the glyph atlas. These files are described here (shapes, counts, meaning, how they were measured) but are NOT distributed, out of respect for the original author. Scalar appearance constants are listed in full.
+Backticked names are keys of the solver's parameter file `params.json`, or arrays of the coefficient file and the glyph atlas. These files are described here (shapes, counts, meaning, how they were measured) and are included in this repository under `data/` (the drawing they encode is fofr's design). Scalar appearance constants are listed in full.
 `src/render.py` in this repository is DeepSeek V4 Pro's independent re-implementation, written from this file and the parameter files (without the solver's code).
 The document is the solver's own, with internal file names removed; "the solver's renderer" means its reference renderer. Section numbers are kept as in the original, so section 10.7 appears before section 10.6.
 The text below is unchanged except for those removals; apparent ambiguities (for example the transpose convention in 6.7 versus 6.8) are left as written, because the reproduction was scored against this exact text.

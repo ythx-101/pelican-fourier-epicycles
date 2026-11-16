@@ -3,13 +3,13 @@
 """
 render.py -- independent re-implementation of the "Pelican Cycling in 3D"
 generator, written by DeepSeek V4 Pro from EQUATIONS.md alone (plus the fitted
-params file, coefficients and measured atlas, which are NOT distributed here).
+params file, coefficients and measured atlas, shipped in ../data/).
 
 SPDX-License-Identifier: MIT
 
 Usage:
-    python3 render.py --params path/to/params.json --frames A B --out x.mp4   # frames [A, B) to H.264 (needs ffmpeg)
-    python3 render.py --params path/to/params.json --frames A B --out x.png   # single frame (B == A+1) to PNG
+    python3 render.py --params data/params.json --frames A B --out x.mp4   # frames [A, B) to H.264 (needs ffmpeg)
+    python3 render.py --params data/params.json --frames A B --out x.png   # single frame (B == A+1) to PNG
 
 The coefficient file (P['coeffs']) and atlas file (P['atlas']) named inside
 params.json are resolved relative to the directory of params.json.
@@ -18,10 +18,8 @@ import os, sys, json, math, struct, zlib, subprocess, argparse
 import numpy as np
 from scipy import ndimage, interpolate
 
-NOT_FOUND_MSG = ('params.json / coeffs_r3.npz / atlas.npz not found. The fitted coefficients and '
-                 'measured tables are not distributed with this repository out of respect for the '
-                 'original work; see README ("Why the coefficients are not included"). EQUATIONS.md documents their '
-                 'shapes and meaning.')
+NOT_FOUND_MSG = ('params.json / coeffs_r3.npz / atlas.npz not found. They ship in the data/ folder of this '
+                 'repository; run with --params data/params.json.')
 
 # ---------------------------------------------------------------- loading
 # Filled in by load(params_path); everything below that is derived from the
@@ -623,7 +621,7 @@ def render_range(A, B, out):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--params', required=True, help='path to params.json (not distributed)')
+    ap.add_argument('--params', required=True, help='path to params.json (data/params.json)')
     ap.add_argument('--frames', nargs=2, type=int, required=True)
     ap.add_argument('--out', required=True)
     args = ap.parse_args()
