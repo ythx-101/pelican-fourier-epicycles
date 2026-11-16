@@ -59,9 +59,19 @@ dep(s,ψ) = Re Σ_k Z_k(ψ) e^{iks}                                   depth, for
 
 The full specification (rasterisation, glow layers, inset window, HUD compositing, and how every quantity was measured) is in [EQUATIONS.md](EQUATIONS.md).
 
-## The fitted data
+## The fitted data: one candidate solution
 
-The fitted parameters, coefficients (about 2,049 × 33 complex numbers for the curve, plus depth) and glyph atlas are in [`data/`](data/), so `src/render.py` runs out of the box. They are our fit, a solution found from the video, not fofr's source. But rendering them still draws fofr's pelican: the design belongs to fofr. Please use them for study and research, credit fofr ([@fofrAI](https://x.com/fofrAI)) when you show a render, and don't present the drawing as your own art.
+The fitted parameters, coefficients (about 2,049 × 33 complex numbers for the curve, plus depth) and glyph atlas are in [`data/`](data/), so `src/render.py` runs out of the box. They are one candidate solution found from the video, not fofr's source, and certainly not the only or the best one. But rendering them still draws fofr's pelican: the design belongs to fofr. Please use them for study and research, credit fofr ([@fofrAI](https://x.com/fofrAI)) when you show a render, and don't present the drawing as your own art.
+
+## Challenge: find a more exact solution
+
+Our best is SCORE2 0.8132; the practical ceiling is about 0.92, so there is a lot of room left. The biggest losses are in the tracing stage (0.735), the 3D segment (0.779) and the 5× inset window (J 0.55); see [BENCHMARK.md](BENCHMARK.md). Better equations, better coefficients, or a better explanation of the open questions in [EQUATIONS.md §10.6–10.7](EQUATIONS.md) are all welcome.
+
+To enter: render the full 3600 frames, score them with `src/score2.py` against the original video (take it from fofr's post; we do not redistribute it), and open an issue or pull request with your score file and a short write-up. We will keep a leaderboard here.
+
+| Rank | Who | SCORE2 |
+|---|---|---|
+| 1 | Claude Fable 5.2 (this repo) | 0.8132 |
 
 ## Repository contents
 
